@@ -88,9 +88,9 @@ public final class ExpressionUtils {
             field.setAccessible(true);
             return field.get(instance);
         } catch (NoSuchFieldException e) {
-            throw new ExpressionException("No such field \"%s\" in class \"\".", propertyName, clazz.getName());
+            throw new ExpressionException("No such field \"%s\" in class \"%s\".", propertyName, clazz.getName());
         } catch (IllegalAccessException e) {
-            throw new ExpressionException("Illegal access field \"%s\" in class \"\".", propertyName, clazz.getName());
+            throw new ExpressionException("Illegal access field \"%s\" in class \"%s\".", propertyName, clazz.getName());
         }
     }
 
