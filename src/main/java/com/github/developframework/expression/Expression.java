@@ -48,7 +48,7 @@ public abstract class Expression {
      * @param expressionValue 表达式字符串
      * @return 表达式对象
      */
-    public final static Expression parse(String expressionValue) {
+    public static final  Expression parse(String expressionValue) {
         if (StringUtils.isNotBlank(expressionValue)) {
             if(expressionValue.contains(".")) {
                 String[] expressionFragments = expressionValue.split("\\.");
@@ -71,10 +71,23 @@ public abstract class Expression {
      * @param singleExpressionValue 单项表达式字符串
      * @return 单项表达式对象
      */
-    private final static Expression parseSingle(String singleExpressionValue) {
+    private static final  Expression parseSingle(String singleExpressionValue) {
         if(ArrayExpression.isArrayExpression(singleExpressionValue)) {
             return new ArrayExpression(singleExpressionValue);
         }
         return new ObjectExpression(singleExpressionValue);
     }
+
+    /**
+     * 连接表达式
+     * @param parentExpression 父表达式对象
+     * @param childExpressionValue 子表达式字符串
+     * @return 新的表达式对象
+     */
+    public static final Expression concat(Expression parentExpression, String childExpressionValue) {
+        Expression childExpression = parseSingle(childExpressionValue);
+        childExpression.setParentExpression(parentExpression);
+        return childExpression;
+    }
+
 }
