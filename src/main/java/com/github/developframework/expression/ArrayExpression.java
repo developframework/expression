@@ -58,6 +58,18 @@ public class ArrayExpression extends Expression{
     }
 
     /**
+     * 从ObjectExpression转化
+     * @param objectExpression 对象表达式
+     * @param index 索引
+     * @return 数组表达式
+     */
+    public static final ArrayExpression fromObject(ObjectExpression objectExpression, int index) {
+        ArrayExpression arrayExpression = new ArrayExpression(objectExpression.getPropertyName(), index);
+        arrayExpression.setParentExpression(objectExpression.getParentExpression());
+        return arrayExpression;
+    }
+
+    /**
      * 判断是否有属性名称
      * @return
      */
