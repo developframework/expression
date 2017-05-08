@@ -69,7 +69,7 @@ public abstract class Expression {
                 return parseSingle(expressionValue);
             }
         }
-        return null;
+        return EMPTY_EXPRESSION;
     }
 
     /**
