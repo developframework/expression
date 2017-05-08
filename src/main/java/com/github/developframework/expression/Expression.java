@@ -10,10 +10,13 @@ import java.util.List;
 
 /**
  * 表达式抽象基类
+ *
  * @author qiuzhenhao
  * @date 2017/5/6
  */
 public abstract class Expression {
+
+    public static final EmptyExpression EMPTY_EXPRESSION = new EmptyExpression();
 
     /* 父表达式对象 */
     @Getter
@@ -22,6 +25,7 @@ public abstract class Expression {
 
     /**
      * 判断是否有父表达式
+     *
      * @return 判断结果
      */
     public boolean hasParentExpression() {
@@ -30,12 +34,13 @@ public abstract class Expression {
 
     /**
      * 返回表达式树
+     *
      * @return 表达式树
      */
     public Expression[] expressionTree() {
         List<Expression> expressionTree = new LinkedList<>();
         Expression tempExression = this;
-        while(tempExression != null) {
+        while (tempExression != null) {
             expressionTree.add(tempExression);
             tempExression = tempExression.parentExpression;
         }
@@ -45,12 +50,13 @@ public abstract class Expression {
 
     /**
      * 将表达式字符串解析成表达式对象
+     *
      * @param expressionValue 表达式字符串
      * @return 表达式对象
      */
-    public static final  Expression parse(String expressionValue) {
+    public static final Expression parse(String expressionValue) {
         if (StringUtils.isNotBlank(expressionValue)) {
-            if(expressionValue.contains(".")) {
+            if (expressionValue.contains(".")) {
                 String[] expressionFragments = expressionValue.split("\\.");
                 Expression rootExpression = parseSingle(expressionFragments[0]);
                 for (int i = 1; i < expressionFragments.length; i++) {
@@ -68,19 +74,24 @@ public abstract class Expression {
 
     /**
      * 解析单项
+     *
      * @param singleExpressionValue 单项表达式字符串
      * @return 单项表达式对象
      */
-    private static final  Expression parseSingle(String singleExpressionValue) {
-        if(ArrayExpression.isArrayExpression(singleExpressionValue)) {
+    private static final Expression parseSingle(String singleExpressionValue) {
+        if (StringUtils.isBlank(singleExpressionValue)) {
+            return EMPTY_EXPRESSION;
+        } else if (ArrayExpression.isArrayExpression(singleExpressionValue)) {
             return new ArrayExpression(singleExpressionValue);
+        } else {
+            return new ObjectExpression(singleExpressionValue);
         }
-        return new ObjectExpression(singleExpressionValue);
     }
 
     /**
      * 连接表达式
-     * @param parentExpression 父表达式对象
+     *
+     * @param parentExpression     父表达式对象
      * @param childExpressionValue 子表达式字符串
      * @return 新的表达式对象
      */

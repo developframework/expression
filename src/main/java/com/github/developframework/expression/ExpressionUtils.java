@@ -5,6 +5,7 @@ import com.github.developframework.expression.exception.ExpressionException;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 表达式取值工具
@@ -59,13 +60,22 @@ public final class ExpressionUtils {
      * @return 值
      */
     public static final Object getValue(Object instance, Expression expression) {
+        Objects.requireNonNull(instance);
+        if(expression == null) {
+            return null;
+        }
+        if(expression == Expression.EMPTY_EXPRESSION) {
+            return instance;
+        }
         Expression[] expressionTree = expression.expressionTree();
         Object tempObject = instance;
         for (Expression singleExpression : expressionTree) {
-            if (singleExpression instanceof ArrayExpression) {
+            if(singleExpression instanceof ObjectExpression){
+                tempObject = getValueFromObjectOrMap(tempObject, ((ObjectExpression) singleExpression).getPropertyName());
+            } else if (singleExpression instanceof ArrayExpression) {
                 tempObject = getValueFromArray(tempObject, (ArrayExpression) singleExpression);
             } else {
-                tempObject = getValueFromObjectOrMap(tempObject, ((ObjectExpression) singleExpression).getPropertyName());
+                // 空表达式 无操作
             }
         }
         return tempObject;
