@@ -117,11 +117,11 @@ public abstract class Expression {
      * @return 新的表达式对象
      */
     public static final Expression concat(Expression parentExpression, String childExpressionValue) {
-        Expression childExpression = parse(childExpressionValue);
+        Expression newExpression = parse(childExpressionValue);
         if(parentExpression != EMPTY_EXPRESSION) {
-            childExpression.setParentExpression(parentExpression);
+            newExpression.setParentExpression(parentExpression);
         }
-        return childExpression;
+        return newExpression;
     }
 
     /**
@@ -131,11 +131,11 @@ public abstract class Expression {
      * @return 新的表达式对象
      */
     public static final Expression concat(Expression parentExpression, Expression childExpression) {
-        Expression newChildExpression = copy(childExpression);
+        Expression newExpression = copy(childExpression);
         if(parentExpression != EMPTY_EXPRESSION) {
-            newChildExpression.setParentExpression(parentExpression);
+            newExpression.setParentExpression(parentExpression);
         }
-        return childExpression;
+        return newExpression;
     }
 
 }
