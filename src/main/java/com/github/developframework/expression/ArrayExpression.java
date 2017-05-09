@@ -1,6 +1,6 @@
 package com.github.developframework.expression;
 
-import com.github.developframework.expression.exception.ExceptionParseException;
+import com.github.developframework.expression.exception.ExpressionParseException;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
@@ -38,13 +38,13 @@ public class ArrayExpression extends Expression{
     public ArrayExpression(String expressionValue) {
         Objects.requireNonNull(expressionValue);
         if (!isArrayExpression(expressionValue)) {
-            throw new ExceptionParseException("The Expression \"%s\" is not a array type expression.", expressionValue);
+            throw new ExpressionParseException("The Expression \"%s\" is not a array type expression.", expressionValue);
         }
         this.propertyName = StringUtils.substringBefore(expressionValue, "[");
         try {
             this.index = new Integer(StringUtils.substringBetween(expressionValue, "[", "]")).intValue();
         } catch(NumberFormatException e) {
-            throw new ExceptionParseException("The Expression \"%s\": index is not a number.", expressionValue);
+            throw new ExpressionParseException("The Expression \"%s\": index is not a number.", expressionValue);
         }
     }
 

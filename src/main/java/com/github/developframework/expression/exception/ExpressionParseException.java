@@ -5,9 +5,9 @@ package com.github.developframework.expression.exception;
  * @author qiuzhenhao
  * @date 2017/5/6
  */
-public class ExceptionParseException extends ExpressionException{
+public class ExpressionParseException extends ExpressionException{
 
-    public ExceptionParseException(String format, Object... objs) {
+    public ExpressionParseException(String format, Object... objs) {
         super(String.format(format, objs));
     }
 }
