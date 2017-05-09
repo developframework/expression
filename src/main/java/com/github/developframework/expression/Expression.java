@@ -39,10 +39,10 @@ public abstract class Expression {
      */
     public Expression[] expressionTree() {
         List<Expression> expressionTree = new LinkedList<>();
-        Expression tempExression = this;
-        while (tempExression != null) {
-            expressionTree.add(tempExression);
-            tempExression = tempExression.parentExpression;
+        Expression tempExpression = this;
+        while (tempExpression != null) {
+            expressionTree.add(tempExpression);
+            tempExpression = tempExpression.parentExpression;
         }
         Collections.reverse(expressionTree);
         return expressionTree.toArray(new Expression[expressionTree.size()]);
@@ -89,6 +89,27 @@ public abstract class Expression {
     }
 
     /**
+     * 复制表达式对象
+     * @param expression 表达式对象
+     * @return 新的表达式对象
+     */
+    public static final Expression copy(Expression expression) {
+        Expression newExpression;
+        if(expression instanceof ObjectExpression) {
+            newExpression = new ObjectExpression(((ObjectExpression) expression).getPropertyName());
+        } else if(expression instanceof ArrayExpression){
+            ArrayExpression arrayExpression = (ArrayExpression) expression;
+            newExpression = new ArrayExpression(arrayExpression.getPropertyName(), arrayExpression.getIndex());
+        } else {
+            newExpression = EMPTY_EXPRESSION;
+        }
+        if(expression.getParentExpression() != null) {
+            newExpression.setParentExpression(copy(expression.getParentExpression()));
+        }
+        return newExpression;
+    }
+
+    /**
      * 连接表达式
      *
      * @param parentExpression     父表达式对象
@@ -96,8 +117,24 @@ public abstract class Expression {
      * @return 新的表达式对象
      */
     public static final Expression concat(Expression parentExpression, String childExpressionValue) {
-        Expression childExpression = parseSingle(childExpressionValue);
-        childExpression.setParentExpression(parentExpression);
+        Expression childExpression = parse(childExpressionValue);
+        if(parentExpression != EMPTY_EXPRESSION) {
+            childExpression.setParentExpression(parentExpression);
+        }
+        return childExpression;
+    }
+
+    /**
+     * 连接表达式
+     * @param parentExpression 父表达式对象
+     * @param childExpression 子表达式对象
+     * @return 新的表达式对象
+     */
+    public static final Expression concat(Expression parentExpression, Expression childExpression) {
+        Expression newChildExpression = copy(childExpression);
+        if(parentExpression != EMPTY_EXPRESSION) {
+            newChildExpression.setParentExpression(parentExpression);
+        }
         return childExpression;
     }
 
