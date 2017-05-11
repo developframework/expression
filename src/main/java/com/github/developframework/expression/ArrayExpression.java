@@ -84,4 +84,29 @@ public class ArrayExpression extends Expression{
         }
         return parentExpression + "." + propertyName + "[" + index + "]";
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        if(parentExpression != null) {
+            hash = hash * 31 + parentExpression.hashCode();
+        }
+        hash = hash * 31 + propertyName.hashCode();
+        hash = hash * 31 + index;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ArrayExpression) {
+            ArrayExpression otherExpression = (ArrayExpression) obj;
+            if(propertyName.equals(otherExpression.getPropertyName()) && index == otherExpression.getIndex()) {
+                if(this.hasParentExpression() && otherExpression.hasParentExpression()) {
+                    return parentExpression.equals(otherExpression.getParentExpression());
+                }
+                return !this.hasParentExpression() && !this.hasParentExpression();
+            }
+        }
+        return false;
+    }
 }

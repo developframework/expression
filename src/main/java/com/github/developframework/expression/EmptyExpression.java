@@ -11,4 +11,9 @@ public class EmptyExpression extends Expression{
     public String toString() {
         return "";
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this == obj;
+    }
 }
