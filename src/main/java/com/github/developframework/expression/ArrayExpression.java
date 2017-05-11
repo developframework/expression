@@ -88,7 +88,7 @@ public class ArrayExpression extends Expression{
     @Override
     public int hashCode() {
         int hash = 7;
-        if(parentExpression != null) {
+        if(this.hasParentExpression()) {
             hash = hash * 31 + parentExpression.hashCode();
         }
         hash = hash * 31 + propertyName.hashCode();
