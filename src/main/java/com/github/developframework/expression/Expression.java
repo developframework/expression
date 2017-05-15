@@ -12,7 +12,6 @@ import java.util.List;
  * 表达式抽象基类
  *
  * @author qiuzhenhao
- * @date 2017/5/6
  */
 public abstract class Expression {
 

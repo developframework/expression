@@ -7,7 +7,6 @@ import lombok.Getter;
  * 示例： abc
  *
  * @author qiuzhenhao
- * @date 2017/5/6
  */
 public class ObjectExpression extends Expression {
 

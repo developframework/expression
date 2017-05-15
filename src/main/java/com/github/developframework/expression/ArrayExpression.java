@@ -10,7 +10,6 @@ import java.util.Objects;
  * 数组表达式
  * 示例： abc[i]
  * @author qiuzhenhao
- * @date 2017/5/6
  */
 public class ArrayExpression extends Expression{
 
