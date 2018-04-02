@@ -6,7 +6,7 @@
 
     <groupId>com.github.developframework</groupId>
     <artifactId>expression</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 
     <name>Expression Framework</name>
     <url>https://github.com/developframework/expression</url>
@@ -42,26 +42,26 @@
     </scm>
 
     <properties>
-        <common-lang3.version>3.4</common-lang3.version>
-        <lombok.version>1.16.10</lombok.version>
-        <slf4j.version>1.7.24</slf4j.version>
+        <version.common-lang3>3.7</version.common-lang3>
+        <version.lombok>1.16.20</version.lombok>
+        <version.slf4j>1.7.25</version.slf4j>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>${common-lang3.version}</version>
+            <version>${version.common-lang3}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
+            <version>${version.lombok}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
+            <version>${version.slf4j}</version>
         </dependency>
     </dependencies>
 
