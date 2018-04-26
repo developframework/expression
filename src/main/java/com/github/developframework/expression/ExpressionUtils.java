@@ -69,6 +69,9 @@ public final class ExpressionUtils {
         Expression[] expressionTree = expression.expressionTree();
         Object tempObject = instance;
         for (Expression singleExpression : expressionTree) {
+            if(tempObject == null) {
+                return null;
+            }
             if(singleExpression instanceof ObjectExpression){
                 tempObject = getValueFromObjectOrMap(tempObject, ((ObjectExpression) singleExpression).getPropertyName());
             } else if (singleExpression instanceof ArrayExpression) {
@@ -114,6 +117,9 @@ public final class ExpressionUtils {
         Object arrayObject = instance;
         if(arrayExpression.hasPropertyName()) {
             arrayObject = getValueFromObjectOrMap(instance, arrayExpression.getPropertyName());
+        }
+        if(arrayObject == null) {
+            return null;
         }
         Class<?> clazz = arrayObject.getClass();
         if (clazz.isArray()) {
