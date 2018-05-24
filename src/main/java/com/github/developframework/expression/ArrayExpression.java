@@ -78,7 +78,7 @@ public class ArrayExpression extends Expression{
 
     @Override
     public String toString() {
-        if(parentExpression == null) {
+        if(parentExpression == Expression.EMPTY_EXPRESSION) {
             return propertyName + "[" + index + "]";
         }
         return parentExpression + "." + propertyName + "[" + index + "]";
@@ -100,10 +100,7 @@ public class ArrayExpression extends Expression{
         if (obj instanceof ArrayExpression) {
             ArrayExpression otherExpression = (ArrayExpression) obj;
             if(propertyName.equals(otherExpression.getPropertyName()) && index == otherExpression.getIndex()) {
-                if(this.hasParentExpression() && otherExpression.hasParentExpression()) {
-                    return parentExpression.equals(otherExpression.getParentExpression());
-                }
-                return !this.hasParentExpression() && !this.hasParentExpression();
+                return parentExpression.equals(otherExpression.getParentExpression());
             }
         }
         return false;

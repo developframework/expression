@@ -1,5 +1,6 @@
 package com.github.developframework.expression;
 
+import com.github.developframework.expression.exception.ExpressionException;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -19,8 +20,14 @@ public abstract class Expression {
 
     /* 父表达式对象 */
     @Getter
-    @Setter
-    protected Expression parentExpression;
+    protected Expression parentExpression = EMPTY_EXPRESSION;
+
+    public void setParentExpression(Expression parentExpression) {
+        if(parentExpression == null) {
+            throw new ExpressionException("can't set null to parent expression.");
+        }
+        this.parentExpression = parentExpression;
+    }
 
     /**
      * 判断是否有父表达式
@@ -28,7 +35,7 @@ public abstract class Expression {
      * @return 判断结果
      */
     public boolean hasParentExpression() {
-        return parentExpression != null;
+        return parentExpression != EMPTY_EXPRESSION;
     }
 
     /**
@@ -39,7 +46,7 @@ public abstract class Expression {
     public Expression[] expressionTree() {
         List<Expression> expressionTree = new LinkedList<>();
         Expression tempExpression = this;
-        while (tempExpression != null) {
+        while (tempExpression != Expression.EMPTY_EXPRESSION) {
             expressionTree.add(tempExpression);
             tempExpression = tempExpression.parentExpression;
         }
@@ -102,8 +109,10 @@ public abstract class Expression {
         } else {
             newExpression = EMPTY_EXPRESSION;
         }
-        if(expression.getParentExpression() != null) {
+        if(expression.getParentExpression() != EMPTY_EXPRESSION) {
             newExpression.setParentExpression(copy(expression.getParentExpression()));
+        } else {
+            newExpression.setParentExpression(EMPTY_EXPRESSION);
         }
         return newExpression;
     }
@@ -116,11 +125,8 @@ public abstract class Expression {
      * @return 新的表达式对象
      */
     public static final Expression concat(Expression parentExpression, String childExpressionValue) {
-        Expression newExpression = parse(childExpressionValue);
-        if(parentExpression != EMPTY_EXPRESSION) {
-            newExpression.setParentExpression(parentExpression);
-        }
-        return newExpression;
+        Expression childExpression = parse(childExpressionValue);
+        return concat(parentExpression, childExpression);
     }
 
     /**
@@ -130,11 +136,20 @@ public abstract class Expression {
      * @return 新的表达式对象
      */
     public static final Expression concat(Expression parentExpression, Expression childExpression) {
-        Expression newExpression = copy(childExpression);
-        if(parentExpression != EMPTY_EXPRESSION) {
-            newExpression.setParentExpression(parentExpression);
+        if(childExpression == EMPTY_EXPRESSION) {
+            return parentExpression == EMPTY_EXPRESSION ? EMPTY_EXPRESSION : parentExpression;
         }
-        return newExpression;
+        if(parentExpression == EMPTY_EXPRESSION) {
+            return childExpression;
+        } else {
+            Expression newExpression = copy(childExpression);
+            if(newExpression.getParentExpression() == EMPTY_EXPRESSION) {
+                newExpression.setParentExpression(parentExpression);
+            } else {
+                newExpression.getParentExpression().setParentExpression(parentExpression);
+            }
+            return newExpression;
+        }
     }
 
 }

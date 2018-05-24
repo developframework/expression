@@ -37,7 +37,7 @@ public final class ExpressionUtils {
      * @return
      */
     public static final <T> T getValue(Object instance, String expressionValue, Class<T> targetClass) {
-        return (T) getValue(instance, Expression.parse(expressionValue));
+        return getValue(instance, Expression.parse(expressionValue), targetClass);
     }
 
     /**
@@ -61,7 +61,7 @@ public final class ExpressionUtils {
     public static final Object getValue(Object instance, Expression expression) {
         Objects.requireNonNull(instance);
         if(expression == null) {
-            return null;
+            throw new ExpressionException("expression is null.");
         }
         if(expression == Expression.EMPTY_EXPRESSION) {
             return instance;
@@ -96,11 +96,9 @@ public final class ExpressionUtils {
             return ((Map) instance).get(propertyName);
         }
         try {
-            Field field = clazz.getDeclaredField(propertyName);
+            Field field = getDeclaredField(clazz, propertyName);
             field.setAccessible(true);
             return field.get(instance);
-        } catch (NoSuchFieldException e) {
-            throw new ExpressionException("No such field \"%s\" in class \"%s\".", propertyName, clazz.getName());
         } catch (IllegalAccessException e) {
             throw new ExpressionException("Illegal access field \"%s\" in class \"%s\".", propertyName, clazz.getName());
         }
@@ -129,5 +127,19 @@ public final class ExpressionUtils {
         } else {
             throw new ExpressionException("The instance \"%s\" type is not array or List.", instance.toString());
         }
+    }
+
+    private static Field getDeclaredField(final Class<?> clazz, String propertyName) {
+        Class<?> temp = clazz;
+        while(temp != Object.class) {
+            try {
+                Field field = temp.getDeclaredField(propertyName);
+                field.setAccessible(true);
+                return field;
+            } catch (NoSuchFieldException e) {
+                temp = temp.getSuperclass();
+            }
+        }
+        throw new ExpressionException("No such field \"%s\" in class \"%s\".", propertyName, clazz.getName());
     }
 }
