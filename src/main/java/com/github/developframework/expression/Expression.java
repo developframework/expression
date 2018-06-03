@@ -2,7 +2,6 @@ package com.github.developframework.expression;
 
 import com.github.developframework.expression.exception.ExpressionException;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
