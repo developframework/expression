@@ -120,7 +120,7 @@
 						<artifactId>maven-release-plugin</artifactId>
 						<configuration>
 							<!-- 设置git 打tag的名称 -->
-							<tagNameFormat>${project.version}</tagNameFormat>
+							<tagNameFormat>@{project.version}</tagNameFormat>
 						</configuration>
 					</plugin>
 					<plugin>
