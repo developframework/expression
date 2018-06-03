@@ -100,6 +100,13 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<artifactId>maven-release-plugin</artifactId>
+				<configuration>
+					<!-- 设置git 打tag的名称 -->
+					<tagNameFormat>@{project.version}</tagNameFormat>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -116,13 +123,6 @@
 
 			<build>
 				<plugins>
-					<plugin>
-						<artifactId>maven-release-plugin</artifactId>
-						<configuration>
-							<!-- 设置git 打tag的名称 -->
-							<tagNameFormat>@{project.version}</tagNameFormat>
-						</configuration>
-					</plugin>
 					<plugin>
 						<artifactId>maven-gpg-plugin</artifactId>
 						<version>1.5</version>
