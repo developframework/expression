@@ -2,9 +2,9 @@ package com.github.developframework.expression;
 
 import com.github.developframework.expression.exception.ExpressionParseException;
 import lombok.Getter;
+import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Objects;
 
 /**
  * 数组表达式
@@ -25,7 +25,7 @@ public class ArrayExpression extends Expression{
      * @param propertyName 属性名称
      * @param index 索引
      */
-    public ArrayExpression(String propertyName, int index) {
+    public ArrayExpression(@NonNull String propertyName, int index) {
         this.propertyName = propertyName;
         this.index = index;
     }
@@ -34,8 +34,7 @@ public class ArrayExpression extends Expression{
      * 构造方法：根据表达式字符串创建数组表达式对象
      * @param expressionValue 表达式字符串
      */
-    public ArrayExpression(String expressionValue) {
-        Objects.requireNonNull(expressionValue);
+    public ArrayExpression(@NonNull String expressionValue) {
         if (!isArrayExpression(expressionValue)) {
             throw new ExpressionParseException("The Expression \"%s\" is not a array type expression.", expressionValue);
         }

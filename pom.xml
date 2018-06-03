@@ -6,7 +6,7 @@
 
     <groupId>com.github.developframework</groupId>
     <artifactId>expression</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0-SNAPSHOT</version>
 
     <name>Expression Framework</name>
     <url>https://github.com/developframework/expression</url>
@@ -18,7 +18,7 @@
             <name>qiuzhenhao</name>
             <email>408000511@qq.com</email>
             <organization>developframework</organization>
-            <organizationUrl>http://www.developframework.org</organizationUrl>
+            <organizationUrl>http://blog.qiushuicloud.xyz</organizationUrl>
         </developer>
     </developers>
 
@@ -38,48 +38,41 @@
         <connection>scm:git:git@github.com:developframework/expression.git</connection>
         <developerConnection>scm:git:git@github.com:developframework/expression.git</developerConnection>
         <url>https://github.com/developframework/expression</url>
-        <tag>${project.version}</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.encoding>UTF8</maven.compiler.encoding>
-        <version.common-lang3>3.7</version.common-lang3>
-        <version.lombok>1.16.20</version.lombok>
+        <version.develop-framework>0.2</version.develop-framework>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.github.developframework</groupId>
+                <artifactId>develop-framework-platform</artifactId>
+                <version>${version.develop-framework}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>${version.common-lang3}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${version.lombok}</version>
-            <optional>true</optional>
+            <groupId>com.github.developframework</groupId>
+            <artifactId>develop-framework-commons</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.github.developframework</groupId>
+                    <artifactId>develop-framework-components</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.4</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 
     <distributionManagement>
         <snapshotRepository>
@@ -92,48 +85,4 @@
         </repository>
     </distributionManagement>
 
-    <profiles>
-        <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-release-plugin</artifactId>
-                        <version>2.3.2</version>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.10.3</version>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <aggregate>true</aggregate>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.5</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>

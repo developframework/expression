@@ -7,6 +7,6 @@ package com.github.developframework.expression.exception;
 public class ExpressionParseException extends ExpressionException{
 
     public ExpressionParseException(String format, Object... objs) {
-        super(String.format(format, objs));
+        super(format, objs);
     }
 }

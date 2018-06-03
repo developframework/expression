@@ -1,8 +1,7 @@
 package com.github.developframework.expression;
 
 import lombok.Getter;
-
-import java.util.Objects;
+import lombok.NonNull;
 
 /**
  * 对象表达式
@@ -16,8 +15,7 @@ public class ObjectExpression extends Expression {
     @Getter
     private String propertyName;
 
-    public ObjectExpression(String propertyName) {
-        Objects.requireNonNull(propertyName);
+    public ObjectExpression(@NonNull String propertyName) {
         this.propertyName = propertyName;
     }
 
