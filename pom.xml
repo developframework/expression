@@ -40,7 +40,7 @@
 	</scm>
 
 	<properties>
-		<version.develop-framework>0.2</version.develop-framework>
+		<version.develop-framework>0.3</version.develop-framework>
 	</properties>
 
 	<dependencyManagement>
@@ -60,10 +60,6 @@
 			<groupId>com.github.developframework</groupId>
 			<artifactId>develop-framework-commons</artifactId>
 			<exclusions>
-				<exclusion>
-					<groupId>com.github.developframework</groupId>
-					<artifactId>develop-framework-components</artifactId>
-				</exclusion>
 				<exclusion>
 					<groupId>com.fasterxml.jackson.core</groupId>
 					<artifactId>jackson-databind</artifactId>
