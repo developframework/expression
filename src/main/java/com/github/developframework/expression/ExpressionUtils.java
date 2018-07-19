@@ -3,9 +3,7 @@ package com.github.developframework.expression;
 import com.github.developframework.expression.exception.ExpressionException;
 
 import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * 表达式取值工具
@@ -124,8 +122,12 @@ public final class ExpressionUtils {
             return ((Object[]) arrayObject)[arrayExpression.getIndex()];
         } else if (List.class.isAssignableFrom(clazz)) {
             return ((List) arrayObject).get(arrayExpression.getIndex());
+        } else if (Set.class.isAssignableFrom(clazz)) {
+            ArrayList arrayList = new ArrayList<>((Set) arrayObject);
+            arrayList.sort(Comparator.comparingInt(Object::hashCode));
+            return arrayList.get(arrayExpression.getIndex());
         } else {
-            throw new ExpressionException("The instance \"%s\" type is not array or List.", instance.toString());
+            throw new ExpressionException("The instance \"%s\" type is not array or List/Set.", instance.toString());
         }
     }
 
