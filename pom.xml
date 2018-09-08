@@ -40,31 +40,28 @@
 	</scm>
 
 	<properties>
-		<version.develop-framework>0.3</version.develop-framework>
+		<version.develop-toolkit>0.1</version.develop-toolkit>
+		<version.lombok>1.18.2</version.lombok>
+		<version.commons-lang3>3.7</version.commons-lang3>
 	</properties>
-
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>com.github.developframework</groupId>
-				<artifactId>develop-framework-platform</artifactId>
-				<version>${version.develop-framework}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.github.developframework</groupId>
-			<artifactId>develop-framework-commons</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>com.fasterxml.jackson.core</groupId>
-					<artifactId>jackson-databind</artifactId>
-				</exclusion>
-			</exclusions>
+			<artifactId>develop-toolkit</artifactId>
+			<version>${version.develop-toolkit}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>${version.lombok}</version>
+			<scope>provided</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${version.commons-lang3}</version>
 		</dependency>
 	</dependencies>
 
@@ -98,7 +95,7 @@
 				<artifactId>maven-release-plugin</artifactId>
 				<configuration>
 					<!-- 设置git 打tag的名称 -->
-					<tagNameFormat>@{project.version}</tagNameFormat>
+					<tagNameFormat>v@{project.version}</tagNameFormat>
 				</configuration>
 			</plugin>
 		</plugins>
