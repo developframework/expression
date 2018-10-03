@@ -40,7 +40,7 @@
 	</scm>
 
 	<properties>
-		<version.develop-toolkit>0.1</version.develop-toolkit>
+		<version.develop-toolkit>0.2</version.develop-toolkit>
 		<version.lombok>1.18.2</version.lombok>
 		<version.commons-lang3>3.7</version.commons-lang3>
 	</properties>

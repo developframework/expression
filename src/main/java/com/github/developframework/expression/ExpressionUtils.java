@@ -1,8 +1,10 @@
 package com.github.developframework.expression;
 
 import com.github.developframework.expression.exception.ExpressionException;
+import develop.toolkit.utils.JavaBeanUtils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -18,7 +20,8 @@ public final class ExpressionUtils {
 
     /**
      * 获取值
-     * @param instance 实例
+     *
+     * @param instance        实例
      * @param expressionValue 表达式字符串
      * @return
      */
@@ -28,9 +31,10 @@ public final class ExpressionUtils {
 
     /**
      * 获取值
-     * @param instance 实例
+     *
+     * @param instance        实例
      * @param expressionValue 表达式字符串
-     * @param targetClass 目标类型
+     * @param targetClass     目标类型
      * @param <T>
      * @return
      */
@@ -40,8 +44,9 @@ public final class ExpressionUtils {
 
     /**
      * 获取值
-     * @param instance 实例
-     * @param expression 表达式
+     *
+     * @param instance    实例
+     * @param expression  表达式
      * @param targetClass 目标类型
      * @param <T>
      * @return
@@ -52,25 +57,26 @@ public final class ExpressionUtils {
 
     /**
      * 获取值
-     * @param instance 实例
+     *
+     * @param instance   实例
      * @param expression 表达式
      * @return 值
      */
     public static final Object getValue(Object instance, Expression expression) {
         Objects.requireNonNull(instance);
-        if(expression == null) {
+        if (expression == null) {
             throw new ExpressionException("expression is null.");
         }
-        if(expression == Expression.EMPTY_EXPRESSION) {
+        if (expression == Expression.EMPTY_EXPRESSION) {
             return instance;
         }
         Expression[] expressionTree = expression.expressionTree();
         Object tempObject = instance;
         for (Expression singleExpression : expressionTree) {
-            if(tempObject == null) {
+            if (tempObject == null) {
                 return null;
             }
-            if(singleExpression instanceof ObjectExpression){
+            if (singleExpression instanceof ObjectExpression) {
                 tempObject = getValueFromObjectOrMap(tempObject, ((ObjectExpression) singleExpression).getPropertyName());
             } else if (singleExpression instanceof ArrayExpression) {
                 tempObject = getValueFromArray(tempObject, (ArrayExpression) singleExpression);
@@ -84,37 +90,32 @@ public final class ExpressionUtils {
     /**
      * 从对象或Map中获取值
      *
-     * @param instance 实例
+     * @param instance     实例
      * @param propertyName 属性名称
      * @return 值
      */
     private static final Object getValueFromObjectOrMap(Object instance, String propertyName) {
         Class<?> clazz = instance.getClass();
-        if(Map.class.isAssignableFrom(clazz)) {
+        if (Map.class.isAssignableFrom(clazz)) {
             return ((Map) instance).get(propertyName);
         }
-        try {
-            Field field = getDeclaredField(clazz, propertyName);
-            field.setAccessible(true);
-            return field.get(instance);
-        } catch (IllegalAccessException e) {
-            throw new ExpressionException("Illegal access field \"%s\" in class \"%s\".", propertyName, clazz.getName());
-        }
+        Field field = getDeclaredField(clazz, propertyName);
+        return getFieldValue(field, instance);
     }
 
     /**
      * 从数组中获取值
      *
-     * @param instance 实例
+     * @param instance        实例
      * @param arrayExpression 表达式
      * @return 值
      */
     private static final Object getValueFromArray(Object instance, ArrayExpression arrayExpression) {
         Object arrayObject = instance;
-        if(arrayExpression.hasPropertyName()) {
+        if (arrayExpression.hasPropertyName()) {
             arrayObject = getValueFromObjectOrMap(instance, arrayExpression.getPropertyName());
         }
-        if(arrayObject == null) {
+        if (arrayObject == null) {
             return null;
         }
         Class<?> clazz = arrayObject.getClass();
@@ -133,7 +134,7 @@ public final class ExpressionUtils {
 
     private static Field getDeclaredField(final Class<?> clazz, String propertyName) {
         Class<?> temp = clazz;
-        while(temp != Object.class) {
+        while (temp != Object.class) {
             try {
                 Field field = temp.getDeclaredField(propertyName);
                 field.setAccessible(true);
@@ -143,5 +144,22 @@ public final class ExpressionUtils {
             }
         }
         throw new ExpressionException("No such field \"%s\" in class \"%s\".", propertyName, clazz.getName());
+    }
+
+    private static Object getFieldValue(Field field, Object instance) {
+        String getterMethodName = JavaBeanUtils.getGetterMethodName(field.getName(), field.getType());
+        Class<?> instanceClass = instance.getClass();
+        try {
+            Method getterMethod = instanceClass.getMethod(getterMethodName, new Class<?>[0]);
+            return getterMethod.invoke(instance, new Class<?>[0]);
+        } catch (NoSuchMethodException e) {
+            try {
+                return field.get(instance);
+            } catch (IllegalAccessException e1) {
+                throw new ExpressionException("Illegal access field \"%s\" in class \"%s\".", field.getName(), instanceClass.getName());
+            }
+        } catch (Exception e) {
+            throw new ExpressionException("%s invoke failed.", getterMethodName);
+        }
     }
 }
