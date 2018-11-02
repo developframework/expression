@@ -12,6 +12,7 @@ import java.util.*;
  *
  * @author qiuzhenhao
  */
+@SuppressWarnings("unchecked")
 public final class ExpressionUtils {
 
     private ExpressionUtils() {
@@ -25,7 +26,7 @@ public final class ExpressionUtils {
      * @param expressionValue 表达式字符串
      * @return
      */
-    public static final Object getValue(Object instance, String expressionValue) {
+    public static Object getValue(Object instance, String expressionValue) {
         return getValue(instance, Expression.parse(expressionValue));
     }
 
@@ -38,7 +39,7 @@ public final class ExpressionUtils {
      * @param <T>
      * @return
      */
-    public static final <T> T getValue(Object instance, String expressionValue, Class<T> targetClass) {
+    public static <T> T getValue(Object instance, String expressionValue, Class<T> targetClass) {
         return getValue(instance, Expression.parse(expressionValue), targetClass);
     }
 
@@ -51,7 +52,7 @@ public final class ExpressionUtils {
      * @param <T>
      * @return
      */
-    public static final <T> T getValue(Object instance, Expression expression, Class<T> targetClass) {
+    public static <T> T getValue(Object instance, Expression expression, Class<T> targetClass) {
         return (T) getValue(instance, expression);
     }
 
@@ -62,7 +63,7 @@ public final class ExpressionUtils {
      * @param expression 表达式
      * @return 值
      */
-    public static final Object getValue(Object instance, Expression expression) {
+    public static Object getValue(Object instance, Expression expression) {
         Objects.requireNonNull(instance);
         if (expression == null) {
             throw new ExpressionException("expression is null.");
@@ -94,7 +95,7 @@ public final class ExpressionUtils {
      * @param propertyName 属性名称
      * @return 值
      */
-    private static final Object getValueFromObjectOrMap(Object instance, String propertyName) {
+    private static Object getValueFromObjectOrMap(Object instance, String propertyName) {
         Class<?> clazz = instance.getClass();
         if (Map.class.isAssignableFrom(clazz)) {
             return ((Map) instance).get(propertyName);
@@ -110,7 +111,7 @@ public final class ExpressionUtils {
      * @param arrayExpression 表达式
      * @return 值
      */
-    private static final Object getValueFromArray(Object instance, ArrayExpression arrayExpression) {
+    private static Object getValueFromArray(Object instance, ArrayExpression arrayExpression) {
         Object arrayObject = instance;
         if (arrayExpression.hasPropertyName()) {
             arrayObject = getValueFromObjectOrMap(instance, arrayExpression.getPropertyName());
