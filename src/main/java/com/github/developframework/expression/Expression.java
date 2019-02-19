@@ -50,7 +50,7 @@ public abstract class Expression {
             tempExpression = tempExpression.parentExpression;
         }
         Collections.reverse(expressionTree);
-        return expressionTree.toArray(new Expression[expressionTree.size()]);
+        return expressionTree.toArray(new Expression[0]);
     }
 
     /**
@@ -83,7 +83,7 @@ public abstract class Expression {
      * @param singleExpressionValue 单项表达式字符串
      * @return 单项表达式对象
      */
-    private static final Expression parseSingle(String singleExpressionValue) {
+    private static Expression parseSingle(String singleExpressionValue) {
         if (StringUtils.isBlank(singleExpressionValue)) {
             return EMPTY_EXPRESSION;
         } else if (ArrayExpression.isArrayExpression(singleExpressionValue)) {
@@ -136,7 +136,7 @@ public abstract class Expression {
      */
     public static final Expression concat(Expression parentExpression, Expression childExpression) {
         if(childExpression == EMPTY_EXPRESSION) {
-            return parentExpression == EMPTY_EXPRESSION ? EMPTY_EXPRESSION : parentExpression;
+            return parentExpression;
         }
         if(parentExpression == EMPTY_EXPRESSION) {
             return childExpression;

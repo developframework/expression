@@ -40,7 +40,7 @@ public class ArrayExpression extends Expression{
         }
         this.propertyName = StringUtils.substringBefore(expressionValue, "[");
         try {
-            this.index = new Integer(StringUtils.substringBetween(expressionValue, "[", "]")).intValue();
+            this.index = new Integer(StringUtils.substringBetween(expressionValue, "[", "]"));
         } catch(NumberFormatException e) {
             throw new ExpressionParseException("The Expression \"%s\": index is not a number.", expressionValue);
         }
