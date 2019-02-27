@@ -1,6 +1,7 @@
 package com.github.developframework.expression.exception;
 
-import develop.toolkit.exception.FormatRuntimeException;
+
+import develop.toolkit.base.exception.FormatRuntimeException;
 
 /**
  * 表达式异常

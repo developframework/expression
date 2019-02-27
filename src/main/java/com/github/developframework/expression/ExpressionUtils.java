@@ -1,7 +1,7 @@
 package com.github.developframework.expression;
 
 import com.github.developframework.expression.exception.ExpressionException;
-import develop.toolkit.utils.JavaBeanUtils;
+import develop.toolkit.base.utils.JavaBeanUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

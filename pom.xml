@@ -40,7 +40,7 @@
 	</scm>
 
 	<properties>
-		<version.develop-toolkit>0.5-SNAPSHOT</version.develop-toolkit>
+		<version.develop-toolkit>1.0.0-SNAPSHOT</version.develop-toolkit>
 		<version.lombok>1.18.6</version.lombok>
 		<version.commons-lang3>3.8.1</version.commons-lang3>
 	</properties>
@@ -48,7 +48,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.github.developframework</groupId>
-			<artifactId>develop-toolkit</artifactId>
+			<artifactId>develop-toolkit-base</artifactId>
 			<version>${version.develop-toolkit}</version>
 		</dependency>
 		<dependency>
