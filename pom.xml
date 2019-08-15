@@ -4,7 +4,7 @@
 
 	<groupId>com.github.developframework</groupId>
 	<artifactId>expression</artifactId>
-	<version>1.3.1</version>
+	<version>1.3.2-SNAPSHOT</version>
 
 	<name>Expression Framework</name>
 	<url>https://github.com/developframework/expression</url>
@@ -36,7 +36,7 @@
 		<connection>scm:git:git@github.com:developframework/expression.git</connection>
 		<developerConnection>scm:git:git@github.com:developframework/expression.git</developerConnection>
 		<url>https://github.com/developframework/expression</url>
-		<tag>v1.3.1</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<properties>
