@@ -2,9 +2,10 @@ package com.github.developframework.expression;
 
 import com.github.developframework.expression.exception.ExpressionException;
 import develop.toolkit.base.utils.JavaBeanUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -136,11 +137,10 @@ public final class ExpressionUtils {
     private static Field getDeclaredField(final Class<?> clazz, String propertyName) {
         Class<?> temp = clazz;
         while (temp != Object.class) {
-            try {
-                Field field = temp.getDeclaredField(propertyName);
-                field.setAccessible(true);
+            Field field = FieldUtils.getDeclaredField(temp, propertyName, true);
+            if (field != null) {
                 return field;
-            } catch (NoSuchFieldException e) {
+            } else {
                 temp = temp.getSuperclass();
             }
         }
@@ -149,15 +149,13 @@ public final class ExpressionUtils {
 
     private static Object getFieldValue(Field field, Object instance) {
         String getterMethodName = JavaBeanUtils.getGetterMethodName(field.getName(), field.getType());
-        Class<?> instanceClass = instance.getClass();
         try {
-            Method getterMethod = instanceClass.getMethod(getterMethodName, new Class<?>[0]);
-            return getterMethod.invoke(instance, new Class<?>[0]);
+            return MethodUtils.invokeMethod(instance, true, getterMethodName);
         } catch (NoSuchMethodException e) {
             try {
                 return field.get(instance);
             } catch (IllegalAccessException e1) {
-                throw new ExpressionException("Illegal access field \"%s\" in class \"%s\".", field.getName(), instanceClass.getName());
+                throw new ExpressionException("Illegal access field \"%s\" in class \"%s\".", field.getName(), instance.getClass().getName());
             }
         } catch (Exception e) {
             throw new ExpressionException("%s invoke failed.", getterMethodName);
