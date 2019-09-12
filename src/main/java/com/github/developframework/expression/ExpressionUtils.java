@@ -1,7 +1,6 @@
 package com.github.developframework.expression;
 
 import com.github.developframework.expression.exception.ExpressionException;
-import develop.toolkit.base.utils.JavaBeanUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 
@@ -148,7 +147,7 @@ public final class ExpressionUtils {
     }
 
     private static Object getFieldValue(Field field, Object instance) {
-        String getterMethodName = JavaBeanUtils.getGetterMethodName(field.getName(), field.getType());
+        String getterMethodName = getGetterMethodName(field.getName(), field.getType());
         try {
             return MethodUtils.invokeMethod(instance, true, getterMethodName);
         } catch (NoSuchMethodException e) {
@@ -160,5 +159,21 @@ public final class ExpressionUtils {
         } catch (Exception e) {
             throw new ExpressionException("%s invoke failed.", getterMethodName);
         }
+    }
+
+    private static String getGetterMethodName(String property, Class<?> javaType) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(property);
+        if (Character.isLowerCase(sb.charAt(0))) {
+            if (sb.length() == 1 || !Character.isUpperCase(sb.charAt(1))) {
+                sb.setCharAt(0, Character.toUpperCase(sb.charAt(0)));
+            }
+        }
+        if (javaType == boolean.class || javaType == Boolean.class) {
+            sb.insert(0, "is");
+        } else {
+            sb.insert(0, "get");
+        }
+        return sb.toString();
     }
 }

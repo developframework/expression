@@ -1,19 +1,17 @@
 package com.github.developframework.expression.exception;
 
 
-import develop.toolkit.base.exception.FormatRuntimeException;
-
 /**
  * 表达式异常
  * @author qiuzhenhao
  */
-public class ExpressionException extends FormatRuntimeException {
+public class ExpressionException extends RuntimeException {
 
     public ExpressionException(String message) {
         super(message);
     }
 
     public ExpressionException(String format, Object... objs) {
-        super(format, objs);
+        super(String.format(format, objs));
     }
 }
