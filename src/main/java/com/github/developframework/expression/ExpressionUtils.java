@@ -67,7 +67,7 @@ public final class ExpressionUtils {
     public static Object getValue(Object instance, Expression expression) {
         Objects.requireNonNull(instance);
         if (expression == null) {
-            throw new ExpressionException("expression is null.");
+            throw new ExpressionException("expression is null");
         }
         if (expression == EmptyExpression.INSTANCE) {
             return instance;
@@ -129,7 +129,7 @@ public final class ExpressionUtils {
             arrayList.sort(Comparator.comparingInt(Object::hashCode));
             return arrayList.get(arrayExpression.getIndex());
         } else {
-            throw new ExpressionException("The instance \"%s\" type is not array or List/Set.", instance.toString());
+            throw new ExpressionException("The instance \"%s\" type is not array or List/Set", instance.toString());
         }
     }
 
@@ -155,7 +155,7 @@ public final class ExpressionUtils {
                 temp = temp.getSuperclass();
             }
         } while (temp != Object.class);
-        throw new ExpressionException("No such field \"%s\" in class \"%s\".", propertyName, clazz.getName());
+        throw new ExpressionException("No such field \"%s\" in class \"%s\"", propertyName, clazz.getName());
     }
 
     private static Object getFieldValue(Field field, Object instance) {
@@ -166,7 +166,7 @@ public final class ExpressionUtils {
             try {
                 return field.get(instance);
             } catch (IllegalAccessException e1) {
-                throw new ExpressionException("Illegal access field \"%s\" in class \"%s\".", field.getName(), instance.getClass().getName());
+                throw new ExpressionException("Illegal access field \"%s\" in class \"%s\"", field.getName(), instance.getClass().getName());
             }
         } catch (Exception e) {
             throw new ExpressionException("%s invoke failed.", getterMethodName);
