@@ -15,13 +15,13 @@ public class ObjectExpression extends Expression {
     @Getter
     private String propertyName;
 
-    public ObjectExpression(@NonNull String propertyName) {
+    protected ObjectExpression(@NonNull String propertyName) {
         this.propertyName = propertyName;
     }
 
     @Override
     public String toString() {
-        if (parentExpression == Expression.EMPTY_EXPRESSION) {
+        if (parentExpression == EmptyExpression.INSTANCE) {
             return propertyName;
         }
         return parentExpression + "." + propertyName;

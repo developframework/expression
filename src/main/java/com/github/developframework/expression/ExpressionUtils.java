@@ -6,6 +6,7 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * 表达式取值工具
@@ -68,7 +69,7 @@ public final class ExpressionUtils {
         if (expression == null) {
             throw new ExpressionException("expression is null.");
         }
-        if (expression == Expression.EMPTY_EXPRESSION) {
+        if (expression == EmptyExpression.INSTANCE) {
             return instance;
         }
         Expression[] expressionTree = expression.expressionTree();
@@ -76,13 +77,12 @@ public final class ExpressionUtils {
         for (Expression singleExpression : expressionTree) {
             if (tempObject == null) {
                 return null;
-            }
-            if (singleExpression instanceof ObjectExpression) {
+            } else if (singleExpression instanceof ObjectExpression) {
                 tempObject = getValueFromObjectOrMap(tempObject, ((ObjectExpression) singleExpression).getPropertyName());
             } else if (singleExpression instanceof ArrayExpression) {
                 tempObject = getValueFromArray(tempObject, (ArrayExpression) singleExpression);
-            } else {
-                // 空表达式 无操作
+            } else if (singleExpression instanceof MethodExpression) {
+                tempObject = getValueFromMethod(instance, tempObject, (MethodExpression) singleExpression);
             }
         }
         return tempObject;
@@ -130,6 +130,18 @@ public final class ExpressionUtils {
             return arrayList.get(arrayExpression.getIndex());
         } else {
             throw new ExpressionException("The instance \"%s\" type is not array or List/Set.", instance.toString());
+        }
+    }
+
+    private static Object getValueFromMethod(Object rootInstance, Object instance, MethodExpression methodExpression) {
+        final Object[] arguments = Stream
+                .of(methodExpression.getArguments())
+                .map(argumentExpression -> getValue(rootInstance, argumentExpression))
+                .toArray(Object[]::new);
+        try {
+            return MethodUtils.invokeMethod(instance, true, methodExpression.getMethodName(), arguments);
+        } catch (Exception e) {
+            throw new ExpressionException("%s invoke failed: %s", methodExpression.getMethodName(), e.getMessage());
         }
     }
 

@@ -15,11 +15,9 @@ import java.util.List;
  */
 public abstract class Expression {
 
-    public static final EmptyExpression EMPTY_EXPRESSION = new EmptyExpression();
-
     /* 父表达式对象 */
     @Getter
-    protected Expression parentExpression = EMPTY_EXPRESSION;
+    protected Expression parentExpression = EmptyExpression.INSTANCE;
 
     public void setParentExpression(Expression parentExpression) {
         if(parentExpression == null) {
@@ -34,7 +32,7 @@ public abstract class Expression {
      * @return 判断结果
      */
     public boolean hasParentExpression() {
-        return parentExpression != EMPTY_EXPRESSION;
+        return parentExpression != EmptyExpression.INSTANCE;
     }
 
     /**
@@ -45,7 +43,7 @@ public abstract class Expression {
     public Expression[] expressionTree() {
         List<Expression> expressionTree = new LinkedList<>();
         Expression tempExpression = this;
-        while (tempExpression != Expression.EMPTY_EXPRESSION) {
+        while (tempExpression != EmptyExpression.INSTANCE) {
             expressionTree.add(tempExpression);
             tempExpression = tempExpression.parentExpression;
         }
@@ -59,10 +57,10 @@ public abstract class Expression {
      * @param expressionValue 表达式字符串
      * @return 表达式对象
      */
-    public static final Expression parse(String expressionValue) {
-        if (StringUtils.isNotBlank(expressionValue)) {
+    public static Expression parse(String expressionValue) {
+        if (StringUtils.isNotEmpty(expressionValue)) {
             if (expressionValue.contains(".")) {
-                String[] expressionFragments = expressionValue.split("\\.");
+                String[] expressionFragments = split(expressionValue);
                 Expression rootExpression = parseSingle(expressionFragments[0]);
                 for (int i = 1; i < expressionFragments.length; i++) {
                     Expression childExpression = parseSingle(expressionFragments[i]);
@@ -74,7 +72,48 @@ public abstract class Expression {
                 return parseSingle(expressionValue);
             }
         }
-        return EMPTY_EXPRESSION;
+        return EmptyExpression.INSTANCE;
+    }
+
+    /**
+     * 切分表达式
+     *
+     * @param expressionValue 表达式字符串
+     * @return 切分结果
+     */
+    public static String[] split(String expressionValue) {
+        if (!expressionValue.contains("(")) {
+            return expressionValue.split("\\.");
+        }
+        List<String> parts = new LinkedList<>();
+        StringBuilder sb = new StringBuilder();
+        int inBracketLevel = 0;
+        for (int i = 0; i < expressionValue.length(); i++) {
+            final char ch = expressionValue.charAt(i);
+            switch (ch) {
+                case '(':
+                    inBracketLevel++;
+                    break;
+                case ')':
+                    inBracketLevel--;
+                    break;
+                case '.': {
+                    if (inBracketLevel == 0) {
+                        parts.add(sb.toString());
+                        sb.setLength(0);
+                        inBracketLevel = 0;
+                    } else {
+                        sb.append(ch);
+                    }
+                }
+                continue;
+            }
+            sb.append(ch);
+        }
+        if (sb.length() > 0) {
+            parts.add(sb.toString());
+        }
+        return parts.toArray(String[]::new);
     }
 
     /**
@@ -84,10 +123,12 @@ public abstract class Expression {
      * @return 单项表达式对象
      */
     private static Expression parseSingle(String singleExpressionValue) {
-        if (StringUtils.isBlank(singleExpressionValue)) {
-            return EMPTY_EXPRESSION;
+        if (StringUtils.isEmpty(singleExpressionValue)) {
+            return EmptyExpression.INSTANCE;
         } else if (ArrayExpression.isArrayExpression(singleExpressionValue)) {
             return new ArrayExpression(singleExpressionValue);
+        } else if (MethodExpression.isMethodExpression(singleExpressionValue)) {
+            return new MethodExpression(singleExpressionValue);
         } else {
             return new ObjectExpression(singleExpressionValue);
         }
@@ -98,7 +139,7 @@ public abstract class Expression {
      * @param expression 表达式对象
      * @return 新的表达式对象
      */
-    public static final Expression copy(Expression expression) {
+    public static Expression copy(Expression expression) {
         Expression newExpression;
         if(expression instanceof ObjectExpression) {
             newExpression = new ObjectExpression(((ObjectExpression) expression).getPropertyName());
@@ -106,12 +147,12 @@ public abstract class Expression {
             ArrayExpression arrayExpression = (ArrayExpression) expression;
             newExpression = new ArrayExpression(arrayExpression.getPropertyName(), arrayExpression.getIndex());
         } else {
-            newExpression = EMPTY_EXPRESSION;
+            newExpression = EmptyExpression.INSTANCE;
         }
-        if(expression.getParentExpression() != EMPTY_EXPRESSION) {
+        if (expression.getParentExpression() != EmptyExpression.INSTANCE) {
             newExpression.setParentExpression(copy(expression.getParentExpression()));
         } else {
-            newExpression.setParentExpression(EMPTY_EXPRESSION);
+            newExpression.setParentExpression(EmptyExpression.INSTANCE);
         }
         return newExpression;
     }
@@ -123,7 +164,7 @@ public abstract class Expression {
      * @param childExpressionValue 子表达式字符串
      * @return 新的表达式对象
      */
-    public static final Expression concat(Expression parentExpression, String childExpressionValue) {
+    public static Expression concat(Expression parentExpression, String childExpressionValue) {
         Expression childExpression = parse(childExpressionValue);
         return concat(parentExpression, childExpression);
     }
@@ -134,15 +175,15 @@ public abstract class Expression {
      * @param childExpression 子表达式对象
      * @return 新的表达式对象
      */
-    public static final Expression concat(Expression parentExpression, Expression childExpression) {
-        if(childExpression == EMPTY_EXPRESSION) {
+    public static Expression concat(Expression parentExpression, Expression childExpression) {
+        if (childExpression == EmptyExpression.INSTANCE) {
             return parentExpression;
         }
-        if(parentExpression == EMPTY_EXPRESSION) {
+        if (parentExpression == EmptyExpression.INSTANCE) {
             return childExpression;
         } else {
             Expression newExpression = copy(childExpression);
-            if(newExpression.getParentExpression() == EMPTY_EXPRESSION) {
+            if (newExpression.getParentExpression() == EmptyExpression.INSTANCE) {
                 newExpression.setParentExpression(parentExpression);
             } else {
                 newExpression.getParentExpression().setParentExpression(parentExpression);

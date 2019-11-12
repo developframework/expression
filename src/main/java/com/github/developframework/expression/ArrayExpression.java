@@ -11,13 +11,12 @@ import org.apache.commons.lang3.StringUtils;
  * 示例： abc[i]
  * @author qiuzhenhao
  */
-public class ArrayExpression extends Expression{
+@Getter
+public class ArrayExpression extends Expression {
 
     /* 属性名称 */
-    @Getter
     private String propertyName;
     /* 索引 */
-    @Getter
     private int index;
 
     /**
@@ -34,37 +33,16 @@ public class ArrayExpression extends Expression{
      * 构造方法：根据表达式字符串创建数组表达式对象
      * @param expressionValue 表达式字符串
      */
-    public ArrayExpression(@NonNull String expressionValue) {
+    protected ArrayExpression(@NonNull String expressionValue) {
         if (!isArrayExpression(expressionValue)) {
-            throw new ExpressionParseException("The Expression \"%s\" is not a array type expression.", expressionValue);
+            throw new ExpressionParseException("The expression \"%s\" is not a array type expression.", expressionValue);
         }
         this.propertyName = StringUtils.substringBefore(expressionValue, "[");
         try {
-            this.index = new Integer(StringUtils.substringBetween(expressionValue, "[", "]"));
+            this.index = Integer.parseInt(StringUtils.substringBetween(expressionValue, "[", "]"));
         } catch(NumberFormatException e) {
-            throw new ExpressionParseException("The Expression \"%s\": index is not a number.", expressionValue);
+            throw new ExpressionParseException("The expression \"%s\": index is not a number.", expressionValue);
         }
-    }
-
-    /**
-     * 检测expressionValue是否是数组型表达式
-     * @param expressionValue 表达式字符串
-     * @return 检测结果
-     */
-    public final static boolean isArrayExpression(String expressionValue) {
-        return expressionValue.matches("^\\w*(\\[\\w+\\])+$");
-    }
-
-    /**
-     * 从ObjectExpression转化
-     * @param objectExpression 对象表达式
-     * @param index 索引
-     * @return 数组表达式
-     */
-    public static final ArrayExpression fromObject(ObjectExpression objectExpression, int index) {
-        ArrayExpression arrayExpression = new ArrayExpression(objectExpression.getPropertyName(), index);
-        arrayExpression.setParentExpression(objectExpression.getParentExpression());
-        return arrayExpression;
     }
 
     /**
@@ -72,12 +50,12 @@ public class ArrayExpression extends Expression{
      * @return
      */
     public boolean hasPropertyName() {
-        return StringUtils.isNotBlank(propertyName);
+        return StringUtils.isNotEmpty(propertyName);
     }
 
     @Override
     public String toString() {
-        if(parentExpression == Expression.EMPTY_EXPRESSION) {
+        if (parentExpression == EmptyExpression.INSTANCE) {
             return propertyName + "[" + index + "]";
         }
         return parentExpression + "." + propertyName + "[" + index + "]";
@@ -103,5 +81,28 @@ public class ArrayExpression extends Expression{
             }
         }
         return false;
+    }
+
+    /**
+     * 检测expressionValue是否是数组型表达式
+     *
+     * @param expressionValue 表达式字符串
+     * @return 检测结果
+     */
+    public static boolean isArrayExpression(String expressionValue) {
+        return expressionValue.matches("^\\w*(\\[\\w+])+$");
+    }
+
+    /**
+     * 从ObjectExpression转化
+     *
+     * @param objectExpression 对象表达式
+     * @param index            索引
+     * @return 数组表达式
+     */
+    public static ArrayExpression fromObject(ObjectExpression objectExpression, int index) {
+        ArrayExpression arrayExpression = new ArrayExpression(objectExpression.getPropertyName(), index);
+        arrayExpression.setParentExpression(objectExpression.getParentExpression());
+        return arrayExpression;
     }
 }

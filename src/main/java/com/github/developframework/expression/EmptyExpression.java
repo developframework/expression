@@ -6,6 +6,8 @@ package com.github.developframework.expression;
  */
 public class EmptyExpression extends Expression{
 
+    public static final EmptyExpression INSTANCE = new EmptyExpression();
+
     @Override
     public String toString() {
         return "";
