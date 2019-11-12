@@ -135,14 +135,14 @@ public final class ExpressionUtils {
 
     private static Field getDeclaredField(final Class<?> clazz, String propertyName) {
         Class<?> temp = clazz;
-        while (temp != Object.class) {
+        do {
             Field field = FieldUtils.getDeclaredField(temp, propertyName, true);
             if (field != null) {
                 return field;
             } else {
                 temp = temp.getSuperclass();
             }
-        }
+        } while (temp != Object.class);
         throw new ExpressionException("No such field \"%s\" in class \"%s\".", propertyName, clazz.getName());
     }
 
