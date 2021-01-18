@@ -2,7 +2,6 @@ package com.github.developframework.expression;
 
 import com.github.developframework.expression.exception.ExpressionParseException;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
@@ -23,16 +22,17 @@ public class ArrayExpression extends Expression {
 
     /**
      * 构造方法：根据表达式字符串创建数组表达式对象
+     *
      * @param expressionValue 表达式字符串
      */
-    protected ArrayExpression(@NonNull String expressionValue) {
+    protected ArrayExpression(String expressionValue) {
         if (!isArrayExpression(expressionValue)) {
             throw new ExpressionParseException("The expression \"%s\" is not a array type expression.", expressionValue);
         }
         this.propertyName = StringUtils.substringBefore(expressionValue, "[");
         try {
             this.index = Integer.parseInt(StringUtils.substringBetween(expressionValue, "[", "]"));
-        } catch(NumberFormatException e) {
+        } catch (NumberFormatException e) {
             throw new ExpressionParseException("The expression \"%s\": index is not a number.", expressionValue);
         }
     }

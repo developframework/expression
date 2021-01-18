@@ -163,8 +163,7 @@ public abstract class Expression {
      * @return 新的表达式对象
      */
     public static Expression concat(Expression parentExpression, String childExpressionValue) {
-        Expression childExpression = parse(childExpressionValue);
-        return concat(parentExpression, childExpression);
+        return concat(parentExpression, parse(childExpressionValue));
     }
 
     /**
