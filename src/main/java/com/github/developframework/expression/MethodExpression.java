@@ -2,6 +2,7 @@ package com.github.developframework.expression;
 
 import com.github.developframework.expression.exception.ExpressionParseException;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.stream.Stream;
@@ -13,18 +14,14 @@ import java.util.stream.Stream;
  * @author qiuzhenhao
  */
 @Getter
+@RequiredArgsConstructor
 public class MethodExpression extends Expression {
 
     /* 方法名称 */
-    private String methodName;
+    private final String methodName;
 
     /* 方法参数 */
-    private Expression[] arguments;
-
-    public MethodExpression(String methodName, Expression[] arguments) {
-        this.methodName = methodName;
-        this.arguments = arguments;
-    }
+    private final Expression[] arguments;
 
     protected MethodExpression(String expressionValue) {
         if (!isMethodExpression(expressionValue)) {

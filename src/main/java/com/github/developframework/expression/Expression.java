@@ -4,7 +4,6 @@ import com.github.developframework.expression.exception.ExpressionException;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -40,15 +39,14 @@ public abstract class Expression {
      *
      * @return 表达式树
      */
-    public Expression[] expressionTree() {
+    public List<Expression> expressionTree() {
         List<Expression> expressionTree = new LinkedList<>();
         Expression tempExpression = this;
         while (tempExpression != EmptyExpression.INSTANCE) {
-            expressionTree.add(tempExpression);
+            expressionTree.add(0, tempExpression);
             tempExpression = tempExpression.parentExpression;
         }
-        Collections.reverse(expressionTree);
-        return expressionTree.toArray(new Expression[0]);
+        return expressionTree;
     }
 
     /**

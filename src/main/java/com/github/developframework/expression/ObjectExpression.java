@@ -1,7 +1,7 @@
 package com.github.developframework.expression;
 
 import lombok.Getter;
-import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 对象表达式
@@ -9,15 +9,12 @@ import lombok.NonNull;
  *
  * @author qiuzhenhao
  */
+@RequiredArgsConstructor
 public class ObjectExpression extends Expression {
 
     /* 属性名称 */
     @Getter
-    private String propertyName;
-
-    protected ObjectExpression(@NonNull String propertyName) {
-        this.propertyName = propertyName;
-    }
+    private final String propertyName;
 
     @Override
     public String toString() {

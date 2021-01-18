@@ -3,6 +3,7 @@ package com.github.developframework.expression;
 import com.github.developframework.expression.exception.ExpressionParseException;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 
@@ -12,22 +13,13 @@ import org.apache.commons.lang3.StringUtils;
  * @author qiuzhenhao
  */
 @Getter
+@RequiredArgsConstructor
 public class ArrayExpression extends Expression {
 
     /* 属性名称 */
-    private String propertyName;
+    private final String propertyName;
     /* 索引 */
-    private int index;
-
-    /**
-     * 构造方法：根据参数创建数组表达式对象
-     * @param propertyName 属性名称
-     * @param index 索引
-     */
-    public ArrayExpression(@NonNull String propertyName, int index) {
-        this.propertyName = propertyName;
-        this.index = index;
-    }
+    private final int index;
 
     /**
      * 构造方法：根据表达式字符串创建数组表达式对象
@@ -47,7 +39,6 @@ public class ArrayExpression extends Expression {
 
     /**
      * 判断是否有属性名称
-     * @return
      */
     public boolean hasPropertyName() {
         return StringUtils.isNotEmpty(propertyName);

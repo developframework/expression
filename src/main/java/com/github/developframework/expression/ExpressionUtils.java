@@ -25,7 +25,7 @@ public final class ExpressionUtils {
      *
      * @param instance        实例
      * @param expressionValue 表达式字符串
-     * @return
+     * @return 值
      */
     public static Object getValue(Object instance, String expressionValue) {
         return getValue(instance, Expression.parse(expressionValue));
@@ -37,8 +37,8 @@ public final class ExpressionUtils {
      * @param instance        实例
      * @param expressionValue 表达式字符串
      * @param targetClass     目标类型
-     * @param <T>
-     * @return
+     * @param <T>             值类型
+     * @return 值
      */
     public static <T> T getValue(Object instance, String expressionValue, Class<T> targetClass) {
         return getValue(instance, Expression.parse(expressionValue), targetClass);
@@ -50,8 +50,8 @@ public final class ExpressionUtils {
      * @param instance    实例
      * @param expression  表达式
      * @param targetClass 目标类型
-     * @param <T>
-     * @return
+     * @param <T> 值类型
+     * @return 值
      */
     public static <T> T getValue(Object instance, Expression expression, Class<T> targetClass) {
         return (T) getValue(instance, expression);
@@ -65,16 +65,14 @@ public final class ExpressionUtils {
      * @return 值
      */
     public static Object getValue(Object instance, Expression expression) {
-        Objects.requireNonNull(instance);
         if (expression == null) {
             throw new ExpressionException("expression is null");
         }
         if (expression == EmptyExpression.INSTANCE) {
             return instance;
         }
-        Expression[] expressionTree = expression.expressionTree();
         Object tempObject = instance;
-        for (Expression singleExpression : expressionTree) {
+        for (Expression singleExpression : expression.expressionTree()) {
             if (tempObject == null) {
                 return null;
             } else if (singleExpression instanceof ObjectExpression) {
@@ -95,13 +93,13 @@ public final class ExpressionUtils {
      * @param propertyName 属性名称
      * @return 值
      */
+    @SuppressWarnings("rawtypes")
     private static Object getValueFromObjectOrMap(Object instance, String propertyName) {
         Class<?> clazz = instance.getClass();
         if (Map.class.isAssignableFrom(clazz)) {
             return ((Map) instance).get(propertyName);
         }
-        Field field = getDeclaredField(clazz, propertyName);
-        return getFieldValue(field, instance);
+        return getFieldValue(getDeclaredField(clazz, propertyName), instance);
     }
 
     /**
@@ -111,6 +109,7 @@ public final class ExpressionUtils {
      * @param arrayExpression 表达式
      * @return 值
      */
+    @SuppressWarnings("rawtypes")
     private static Object getValueFromArray(Object instance, ArrayExpression arrayExpression) {
         Object arrayObject = instance;
         if (arrayExpression.hasPropertyName()) {
