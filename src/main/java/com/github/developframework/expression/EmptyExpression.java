@@ -1,10 +1,15 @@
 package com.github.developframework.expression;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * 空表达式
+ *
  * @author qiuzhenhao
  */
-public class EmptyExpression extends Expression{
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class EmptyExpression extends Expression {
 
     public static final EmptyExpression INSTANCE = new EmptyExpression();
 
