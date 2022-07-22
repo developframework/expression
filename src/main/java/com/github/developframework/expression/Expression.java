@@ -4,6 +4,7 @@ import com.github.developframework.expression.exception.ExpressionException;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public abstract class Expression {
     protected Expression parentExpression = EmptyExpression.INSTANCE;
 
     public void setParentExpression(Expression parentExpression) {
-        if(parentExpression == null) {
+        if (parentExpression == null) {
             throw new ExpressionException("can't set null to parent expression.");
         }
         this.parentExpression = parentExpression;
@@ -46,7 +47,7 @@ public abstract class Expression {
             expressionTree.add(0, tempExpression);
             tempExpression = tempExpression.parentExpression;
         }
-        return expressionTree;
+        return Collections.unmodifiableList(expressionTree);
     }
 
     /**
@@ -56,21 +57,14 @@ public abstract class Expression {
      * @return 表达式对象
      */
     public static Expression parse(String expressionValue) {
-        if (StringUtils.isNotEmpty(expressionValue)) {
-            if (expressionValue.contains(".")) {
-                String[] expressionFragments = split(expressionValue);
-                Expression rootExpression = parseSingle(expressionFragments[0]);
-                for (int i = 1; i < expressionFragments.length; i++) {
-                    Expression childExpression = parseSingle(expressionFragments[i]);
-                    childExpression.setParentExpression(rootExpression);
-                    rootExpression = childExpression;
-                }
-                return rootExpression;
-            } else {
-                return parseSingle(expressionValue);
-            }
+        String[] expressionFragments = split(expressionValue);
+        Expression expression = EmptyExpression.INSTANCE;
+        for (String fragment : expressionFragments) {
+            Expression child = parseSingle(fragment);
+            child.setParentExpression(expression);
+            expression = child;
         }
-        return EmptyExpression.INSTANCE;
+        return expression;
     }
 
     /**
@@ -79,14 +73,20 @@ public abstract class Expression {
      * @param expressionValue 表达式字符串
      * @return 切分结果
      */
-    public static String[] split(String expressionValue) {
+    private static String[] split(String expressionValue) {
+        if (StringUtils.isBlank(expressionValue)) {
+            return new String[0];
+        }
+        if (!expressionValue.contains(".")) {
+            return new String[]{expressionValue};
+        }
         if (!expressionValue.contains("(")) {
             return expressionValue.split("\\.");
         }
         List<String> parts = new LinkedList<>();
         StringBuilder sb = new StringBuilder();
         int inBracketLevel = 0;
-        for (int i = 0; i < expressionValue.length(); i++) {
+        for (int i = 0, len = expressionValue.length(); i < len; i++) {
             final char ch = expressionValue.charAt(i);
             switch (ch) {
                 case '(':
@@ -99,7 +99,6 @@ public abstract class Expression {
                     if (inBracketLevel == 0) {
                         parts.add(sb.toString());
                         sb.setLength(0);
-                        inBracketLevel = 0;
                     } else {
                         sb.append(ch);
                     }
@@ -121,9 +120,7 @@ public abstract class Expression {
      * @return 单项表达式对象
      */
     private static Expression parseSingle(String singleExpressionValue) {
-        if (StringUtils.isEmpty(singleExpressionValue)) {
-            return EmptyExpression.INSTANCE;
-        } else if (ArrayExpression.isArrayExpression(singleExpressionValue)) {
+        if (ArrayExpression.isArrayExpression(singleExpressionValue)) {
             return new ArrayExpression(singleExpressionValue);
         } else if (MethodExpression.isMethodExpression(singleExpressionValue)) {
             return new MethodExpression(singleExpressionValue);
@@ -134,14 +131,15 @@ public abstract class Expression {
 
     /**
      * 复制表达式对象
+     *
      * @param expression 表达式对象
      * @return 新的表达式对象
      */
     public static Expression copy(Expression expression) {
         Expression newExpression;
-        if(expression instanceof ObjectExpression) {
+        if (expression instanceof ObjectExpression) {
             newExpression = new ObjectExpression(((ObjectExpression) expression).getPropertyName());
-        } else if(expression instanceof ArrayExpression){
+        } else if (expression instanceof ArrayExpression) {
             ArrayExpression arrayExpression = (ArrayExpression) expression;
             newExpression = new ArrayExpression(arrayExpression.getPropertyName(), arrayExpression.getIndex());
         } else {
@@ -168,8 +166,9 @@ public abstract class Expression {
 
     /**
      * 连接表达式
+     *
      * @param parentExpression 父表达式对象
-     * @param childExpression 子表达式对象
+     * @param childExpression  子表达式对象
      * @return 新的表达式对象
      */
     public static Expression concat(Expression parentExpression, Expression childExpression) {

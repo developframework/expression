@@ -40,9 +40,12 @@
 	</scm>
 
     <properties>
-        <version.lombok>1.18.12</version.lombok>
-        <version.commons-lang3>3.9</version.commons-lang3>
-    </properties>
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
+
+		<version.lombok>1.18.24</version.lombok>
+		<version.commons-lang3>3.12.0</version.commons-lang3>
+	</properties>
 
 	<dependencies>
 		<dependency>

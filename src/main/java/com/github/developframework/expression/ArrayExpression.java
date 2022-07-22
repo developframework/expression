@@ -3,12 +3,15 @@ package com.github.developframework.expression;
 import com.github.developframework.expression.exception.ExpressionParseException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
+
+import java.util.LinkedList;
+import java.util.List;
 
 
 /**
  * 数组表达式
  * 示例： abc[i]
+ *
  * @author qiuzhenhao
  */
 @Getter
@@ -18,7 +21,7 @@ public class ArrayExpression extends Expression {
     /* 属性名称 */
     private final String propertyName;
     /* 索引 */
-    private final int index;
+    private final int[] index;
 
     /**
      * 构造方法：根据表达式字符串创建数组表达式对象
@@ -29,33 +32,42 @@ public class ArrayExpression extends Expression {
         if (!isArrayExpression(expressionValue)) {
             throw new ExpressionParseException("The expression \"%s\" is not a array type expression.", expressionValue);
         }
-        this.propertyName = StringUtils.substringBefore(expressionValue, "[");
-        try {
-            this.index = Integer.parseInt(StringUtils.substringBetween(expressionValue, "[", "]"));
-        } catch (NumberFormatException e) {
-            throw new ExpressionParseException("The expression \"%s\": index is not a number.", expressionValue);
+        final int bracketStart = expressionValue.indexOf("[");
+        this.propertyName = expressionValue.substring(0, bracketStart);
+        StringBuilder sb = new StringBuilder();
+        List<Integer> indexs = new LinkedList<>();
+        for (char c : expressionValue.substring(bracketStart).toCharArray()) {
+            switch (c) {
+                case '[':
+                    sb.setLength(0);
+                    break;
+                case ']':
+                    indexs.add(Integer.parseInt(sb.toString()));
+                    break;
+                default:
+                    sb.append(c);
+                    break;
+            }
         }
+        this.index = indexs.stream().mapToInt(Integer::intValue).toArray();
     }
 
     /**
      * 判断是否有属性名称
      */
     public boolean hasPropertyName() {
-        return StringUtils.isNotEmpty(propertyName);
+        return !propertyName.isEmpty();
     }
 
     @Override
     public String toString() {
-        if (parentExpression == EmptyExpression.INSTANCE) {
-            return propertyName + "[" + index + "]";
-        }
-        return parentExpression + "." + propertyName + "[" + index + "]";
+        return (parentExpression == EmptyExpression.INSTANCE ? "" : parentExpression + ".") + propertyName + "[" + index + "]";
     }
 
     @Override
     public int hashCode() {
         int hash = 7;
-        if(this.hasParentExpression()) {
+        if (this.hasParentExpression()) {
             hash = hash * 31 + parentExpression.hashCode();
         }
         hash = hash * 31 + propertyName.hashCode();
@@ -67,7 +79,7 @@ public class ArrayExpression extends Expression {
     public boolean equals(Object obj) {
         if (obj instanceof ArrayExpression) {
             ArrayExpression otherExpression = (ArrayExpression) obj;
-            if(propertyName.equals(otherExpression.getPropertyName()) && index == otherExpression.getIndex()) {
+            if (propertyName.equals(otherExpression.getPropertyName()) && index == otherExpression.getIndex()) {
                 return parentExpression.equals(otherExpression.getParentExpression());
             }
         }
@@ -81,7 +93,7 @@ public class ArrayExpression extends Expression {
      * @return 检测结果
      */
     public static boolean isArrayExpression(String expressionValue) {
-        return expressionValue.matches("^\\w*(\\[\\w+])+$");
+        return expressionValue.matches("^\\w*(\\[\\d+])+$");
     }
 
     /**
