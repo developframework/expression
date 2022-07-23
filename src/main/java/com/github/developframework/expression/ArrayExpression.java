@@ -2,10 +2,11 @@ package com.github.developframework.expression;
 
 import com.github.developframework.expression.exception.ExpressionParseException;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 /**
@@ -15,13 +16,10 @@ import java.util.List;
  * @author qiuzhenhao
  */
 @Getter
-@RequiredArgsConstructor
 public class ArrayExpression extends Expression {
 
-    /* 属性名称 */
-    private final String propertyName;
     /* 索引 */
-    private final int[] index;
+    private final int[] indexArray;
 
     /**
      * 构造方法：根据表达式字符串创建数组表达式对象
@@ -29,6 +27,7 @@ public class ArrayExpression extends Expression {
      * @param expressionValue 表达式字符串
      */
     protected ArrayExpression(String expressionValue) {
+        super(expressionValue);
         if (!isArrayExpression(expressionValue)) {
             throw new ExpressionParseException("The expression \"%s\" is not a array type expression.", expressionValue);
         }
@@ -49,7 +48,13 @@ public class ArrayExpression extends Expression {
                     break;
             }
         }
-        this.index = indexs.stream().mapToInt(Integer::intValue).toArray();
+        this.indexArray = indexs.stream().mapToInt(Integer::intValue).toArray();
+    }
+
+    protected ArrayExpression(String propertyName, int[] indexArray) {
+        super(propertyName + IntStream.of(indexArray).mapToObj(i -> "[" + i + "]").collect(Collectors.joining()));
+        this.propertyName = propertyName;
+        this.indexArray = indexArray;
     }
 
     /**
@@ -57,33 +62,6 @@ public class ArrayExpression extends Expression {
      */
     public boolean hasPropertyName() {
         return !propertyName.isEmpty();
-    }
-
-    @Override
-    public String toString() {
-        return (parentExpression == EmptyExpression.INSTANCE ? "" : parentExpression + ".") + propertyName + "[" + index + "]";
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        if (this.hasParentExpression()) {
-            hash = hash * 31 + parentExpression.hashCode();
-        }
-        hash = hash * 31 + propertyName.hashCode();
-        hash = hash * 31 + index;
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof ArrayExpression) {
-            ArrayExpression otherExpression = (ArrayExpression) obj;
-            if (propertyName.equals(otherExpression.getPropertyName()) && index == otherExpression.getIndex()) {
-                return parentExpression.equals(otherExpression.getParentExpression());
-            }
-        }
-        return false;
     }
 
     /**
@@ -100,11 +78,11 @@ public class ArrayExpression extends Expression {
      * 从ObjectExpression转化
      *
      * @param objectExpression 对象表达式
-     * @param index            索引
+     * @param indexArray       索引
      * @return 数组表达式
      */
-    public static ArrayExpression fromObject(ObjectExpression objectExpression, int index) {
-        ArrayExpression arrayExpression = new ArrayExpression(objectExpression.getPropertyName(), index);
+    public static ArrayExpression fromObject(ObjectExpression objectExpression, int[] indexArray) {
+        ArrayExpression arrayExpression = new ArrayExpression(objectExpression.getPropertyName(), indexArray);
         arrayExpression.setParentExpression(objectExpression.getParentExpression());
         return arrayExpression;
     }

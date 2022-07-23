@@ -1,7 +1,10 @@
 package com.github.developframework.expression;
 
 import com.github.developframework.expression.exception.ExpressionException;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
@@ -13,11 +16,23 @@ import java.util.List;
  *
  * @author qiuzhenhao
  */
+@Getter
+@EqualsAndHashCode(of = {"parentExpression", "expressionValue"})
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class Expression {
 
+    protected final String expressionValue;
+
     /* 父表达式对象 */
-    @Getter
     protected Expression parentExpression = EmptyExpression.INSTANCE;
+
+    /* 属性名称 */
+    protected String propertyName;
+
+    @Override
+    public String toString() {
+        return (parentExpression == EmptyExpression.INSTANCE ? "" : parentExpression + ".") + expressionValue;
+    }
 
     public void setParentExpression(Expression parentExpression) {
         if (parentExpression == null) {
@@ -141,7 +156,7 @@ public abstract class Expression {
             newExpression = new ObjectExpression(((ObjectExpression) expression).getPropertyName());
         } else if (expression instanceof ArrayExpression) {
             ArrayExpression arrayExpression = (ArrayExpression) expression;
-            newExpression = new ArrayExpression(arrayExpression.getPropertyName(), arrayExpression.getIndex());
+            newExpression = new ArrayExpression(arrayExpression.getPropertyName(), arrayExpression.getIndexArray());
         } else {
             newExpression = EmptyExpression.INSTANCE;
         }
