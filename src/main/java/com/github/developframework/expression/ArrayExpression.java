@@ -12,8 +12,9 @@ import java.util.stream.IntStream;
 /**
  * 数组表达式
  * 示例： abc[i]
+ * 支持多维数组 matrix[x][y][z]
  *
- * @author qiuzhenhao
+ * @author qiushui
  */
 @Getter
 public class ArrayExpression extends Expression {
@@ -27,33 +28,33 @@ public class ArrayExpression extends Expression {
      * @param expressionValue 表达式字符串
      */
     protected ArrayExpression(String expressionValue) {
-        super(expressionValue);
         if (!isArrayExpression(expressionValue)) {
             throw new ExpressionParseException("The expression \"%s\" is not a array type expression.", expressionValue);
         }
+        this.expressionValue = expressionValue;
         final int bracketStart = expressionValue.indexOf("[");
-        this.propertyName = expressionValue.substring(0, bracketStart);
+        this.name = expressionValue.substring(0, bracketStart);
         StringBuilder sb = new StringBuilder();
-        List<Integer> indexs = new LinkedList<>();
+        List<Integer> indexList = new LinkedList<>();
         for (char c : expressionValue.substring(bracketStart).toCharArray()) {
             switch (c) {
                 case '[':
                     sb.setLength(0);
                     break;
                 case ']':
-                    indexs.add(Integer.parseInt(sb.toString()));
+                    indexList.add(Integer.parseInt(sb.toString()));
                     break;
                 default:
                     sb.append(c);
                     break;
             }
         }
-        this.indexArray = indexs.stream().mapToInt(Integer::intValue).toArray();
+        this.indexArray = indexList.stream().mapToInt(Integer::intValue).toArray();
     }
 
     protected ArrayExpression(String propertyName, int[] indexArray) {
-        super(propertyName + IntStream.of(indexArray).mapToObj(i -> "[" + i + "]").collect(Collectors.joining()));
-        this.propertyName = propertyName;
+        this.expressionValue = propertyName + IntStream.of(indexArray).mapToObj(i -> "[" + i + "]").collect(Collectors.joining());
+        this.name = propertyName;
         this.indexArray = indexArray;
     }
 
@@ -61,7 +62,7 @@ public class ArrayExpression extends Expression {
      * 判断是否有属性名称
      */
     public boolean hasPropertyName() {
-        return !propertyName.isEmpty();
+        return !name.isEmpty();
     }
 
     /**
@@ -71,7 +72,7 @@ public class ArrayExpression extends Expression {
      * @return 检测结果
      */
     public static boolean isArrayExpression(String expressionValue) {
-        return expressionValue.matches("^\\w*(\\[\\d+])+$");
+        return expressionValue != null && expressionValue.matches("^\\w*(\\[\\d+])+$");
     }
 
     /**
@@ -82,7 +83,7 @@ public class ArrayExpression extends Expression {
      * @return 数组表达式
      */
     public static ArrayExpression fromObject(ObjectExpression objectExpression, int[] indexArray) {
-        ArrayExpression arrayExpression = new ArrayExpression(objectExpression.getPropertyName(), indexArray);
+        ArrayExpression arrayExpression = new ArrayExpression(objectExpression.getName(), indexArray);
         arrayExpression.setParentExpression(objectExpression.getParentExpression());
         return arrayExpression;
     }

@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 /**
  * 表达式取值工具
  *
- * @author qiuzhenhao
+ * @author qiushui
  */
 @SuppressWarnings("unchecked")
 public final class ExpressionUtils {
@@ -65,25 +65,25 @@ public final class ExpressionUtils {
      * @return 值
      */
     public static Object getValue(Object instance, Expression expression) {
-        if (expression == null) {
-            throw new ExpressionException("expression is null");
+        if (instance == null) {
+            return null;
         }
-        if (expression == EmptyExpression.INSTANCE) {
+        if (expression == null || expression == EmptyExpression.INSTANCE) {
             return instance;
         }
-        Object tempObject = instance;
+        Object value = instance;
         for (Expression singleExpression : expression.expressionTree()) {
-            if (tempObject == null) {
-                return null;
+            if (value == null) {
+                break;
             } else if (singleExpression instanceof ObjectExpression) {
-                tempObject = getValueFromObjectOrMap(tempObject, ((ObjectExpression) singleExpression).getPropertyName());
+                value = getValueFromObjectOrMap(value, singleExpression.getName());
             } else if (singleExpression instanceof ArrayExpression) {
-                tempObject = getValueFromArray(tempObject, (ArrayExpression) singleExpression);
+                value = getValueFromArray(value, (ArrayExpression) singleExpression);
             } else if (singleExpression instanceof MethodExpression) {
-                tempObject = getValueFromMethod(instance, tempObject, (MethodExpression) singleExpression);
+                value = getValueFromMethod(instance, value, (MethodExpression) singleExpression);
             }
         }
-        return tempObject;
+        return value;
     }
 
     /**
@@ -113,23 +113,27 @@ public final class ExpressionUtils {
     private static Object getValueFromArray(Object instance, ArrayExpression arrayExpression) {
         Object arrayObject = instance;
         if (arrayExpression.hasPropertyName()) {
-            arrayObject = getValueFromObjectOrMap(instance, arrayExpression.getPropertyName());
+            arrayObject = getValueFromObjectOrMap(instance, arrayExpression.getName());
         }
-        if (arrayObject == null) {
-            return null;
+        for (int i : arrayExpression.getIndexArray()) {
+            if (arrayObject == null) {
+                break;
+            } else {
+                Class<?> clazz = arrayObject.getClass();
+                if (clazz.isArray()) {
+                    arrayObject = ((Object[]) arrayObject)[i];
+                } else if (List.class.isAssignableFrom(clazz)) {
+                    arrayObject = ((List) arrayObject).get(i);
+                } else if (Set.class.isAssignableFrom(clazz)) {
+                    ArrayList arrayList = new ArrayList<>((Set) arrayObject);
+                    arrayList.sort(Comparator.comparingInt(Object::hashCode));
+                    arrayObject = arrayList.get(i);
+                } else {
+                    throw new ExpressionException("The instance \"%s\" type \"%s\" is not array or List/Set", instance.toString(), clazz);
+                }
+            }
         }
-        Class<?> clazz = arrayObject.getClass();
-        if (clazz.isArray()) {
-            return ((Object[]) arrayObject)[arrayExpression.getIndex()];
-        } else if (List.class.isAssignableFrom(clazz)) {
-            return ((List) arrayObject).get(arrayExpression.getIndex());
-        } else if (Set.class.isAssignableFrom(clazz)) {
-            ArrayList arrayList = new ArrayList<>((Set) arrayObject);
-            arrayList.sort(Comparator.comparingInt(Object::hashCode));
-            return arrayList.get(arrayExpression.getIndex());
-        } else {
-            throw new ExpressionException("The instance \"%s\" type is not array or List/Set", instance.toString());
-        }
+        return arrayObject;
     }
 
     private static Object getValueFromMethod(Object rootInstance, Object instance, MethodExpression methodExpression) {
@@ -138,9 +142,9 @@ public final class ExpressionUtils {
                 .map(argumentExpression -> getValue(rootInstance, argumentExpression))
                 .toArray(Object[]::new);
         try {
-            return MethodUtils.invokeMethod(instance, true, methodExpression.getMethodName(), arguments);
+            return MethodUtils.invokeMethod(instance, true, methodExpression.getName(), arguments);
         } catch (Exception e) {
-            throw new ExpressionException("%s invoke failed: %s", methodExpression.getMethodName(), e.getMessage());
+            throw new ExpressionException("%s invoke failed: %s", methodExpression.getName(), e.getMessage());
         }
     }
 

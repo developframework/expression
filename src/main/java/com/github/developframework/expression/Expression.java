@@ -1,10 +1,8 @@
 package com.github.developframework.expression;
 
 import com.github.developframework.expression.exception.ExpressionException;
-import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
@@ -14,24 +12,23 @@ import java.util.List;
 /**
  * 表达式抽象基类
  *
- * @author qiuzhenhao
+ * @author qiushui
  */
 @Getter
 @EqualsAndHashCode(of = {"parentExpression", "expressionValue"})
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class Expression {
 
-    protected final String expressionValue;
+    protected String expressionValue;
 
     /* 父表达式对象 */
     protected Expression parentExpression = EmptyExpression.INSTANCE;
 
-    /* 属性名称 */
-    protected String propertyName;
+    /* 名称 */
+    protected String name;
 
     @Override
     public String toString() {
-        return (parentExpression == EmptyExpression.INSTANCE ? "" : parentExpression + ".") + expressionValue;
+        return (parentExpression == null || parentExpression == EmptyExpression.INSTANCE ? "" : parentExpression + ".") + expressionValue;
     }
 
     public void setParentExpression(Expression parentExpression) {
@@ -153,10 +150,10 @@ public abstract class Expression {
     public static Expression copy(Expression expression) {
         Expression newExpression;
         if (expression instanceof ObjectExpression) {
-            newExpression = new ObjectExpression(((ObjectExpression) expression).getPropertyName());
+            newExpression = new ObjectExpression(expression.getName());
         } else if (expression instanceof ArrayExpression) {
             ArrayExpression arrayExpression = (ArrayExpression) expression;
-            newExpression = new ArrayExpression(arrayExpression.getPropertyName(), arrayExpression.getIndexArray());
+            newExpression = new ArrayExpression(arrayExpression.getName(), arrayExpression.getIndexArray());
         } else {
             newExpression = EmptyExpression.INSTANCE;
         }

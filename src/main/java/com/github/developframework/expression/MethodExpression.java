@@ -2,23 +2,19 @@ package com.github.developframework.expression;
 
 import com.github.developframework.expression.exception.ExpressionParseException;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  * 方法表达式
  * 示例： a.abc(x, y)
  *
- * @author qiuzhenhao
+ * @author qiushui
  */
 @Getter
-@RequiredArgsConstructor
 public class MethodExpression extends Expression {
-
-    /* 方法名称 */
-    private final String methodName;
 
     /* 方法参数 */
     private final Expression[] arguments;
@@ -27,54 +23,26 @@ public class MethodExpression extends Expression {
         if (!isMethodExpression(expressionValue)) {
             throw new ExpressionParseException("The Expression \"%s\" is not a method expression.", expressionValue);
         }
-        this.methodName = StringUtils.substringBefore(expressionValue, "(");
-        String argumentString = expressionValue.substring(expressionValue.indexOf("(") + 1, expressionValue.lastIndexOf(")"));
+        this.name = StringUtils.substringBefore(expressionValue, "(");
+        final String argumentString = expressionValue.substring(expressionValue.indexOf("(") + 1, expressionValue.lastIndexOf(")"));
         this.arguments = Stream
-                .of(argumentString.split("\\s*,\\s*"))
+                .of(argumentString.split(","))
                 .map(Expression::parse)
-                .filter(e -> e != EmptyExpression.INSTANCE)
+                .filter(e -> e instanceof ObjectExpression || e instanceof ArrayExpression)
                 .toArray(Expression[]::new);
+        this.expressionValue = forExpressionValue(this.name, this.arguments);
     }
 
-    @Override
-    public String toString() {
-        if (parentExpression == EmptyExpression.INSTANCE) {
-            return methodName;
-        }
-        return parentExpression + "." + methodName + "(" + StringUtils.join(arguments, ",") + ")";
+    protected MethodExpression(String methodName, Expression[] arguments) {
+        this.name = methodName;
+        this.arguments = arguments;
+        this.expressionValue = forExpressionValue(this.name, this.arguments);
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        if (this.hasParentExpression()) {
-            hash = hash * 31 + parentExpression.hashCode();
-        }
-        hash = hash * 31 + methodName.hashCode();
-        for (Expression argument : arguments) {
-            hash = hash * 31 + argument.hashCode();
-        }
-        return hash;
+    private String forExpressionValue(String methodName, Expression[] arguments) {
+        return methodName + Stream.of(arguments).map(Expression::toString).collect(Collectors.joining(", ", "(", ")"));
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj instanceof MethodExpression) {
-            MethodExpression otherExpression = (MethodExpression) obj;
-            if (parentExpression.equals(otherExpression.getParentExpression()) && methodName.equals(otherExpression.methodName) && arguments.length == otherExpression.arguments.length) {
-                for (int i = 0; i < arguments.length; i++) {
-                    if (!arguments[i].equals(otherExpression.arguments[i])) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        }
-        return false;
-    }
 
     /**
      * 检测expressionValue是否是方法型表达式
@@ -83,6 +51,6 @@ public class MethodExpression extends Expression {
      * @return 检测结果
      */
     public static boolean isMethodExpression(String expressionValue) {
-        return expressionValue.matches("^\\w+\\((.+(\\s*,\\s*.+)*)?\\)$");
+        return expressionValue != null && expressionValue.matches("^\\w+\\((\\w+(\\[\\d+])*(,\\w+(\\[\\d+])*)*)?\\)$");
     }
 }
