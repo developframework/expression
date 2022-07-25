@@ -48,6 +48,34 @@ public abstract class Expression {
     }
 
     /**
+     * 是否是对象表达式
+     */
+    public boolean isObject() {
+        return this instanceof ObjectExpression;
+    }
+
+    /**
+     * 是否是数组表达式
+     */
+    public boolean isArray() {
+        return this instanceof ArrayExpression;
+    }
+
+    /**
+     * 是否是方法表达式
+     */
+    public boolean isMethod() {
+        return this instanceof MethodExpression;
+    }
+
+    /**
+     * 是否是空表达式
+     */
+    public boolean isEmpty() {
+        return this == EmptyExpression.INSTANCE;
+    }
+
+    /**
      * 返回表达式树
      *
      * @return 表达式树
@@ -199,5 +227,4 @@ public abstract class Expression {
             return newExpression;
         }
     }
-
 }

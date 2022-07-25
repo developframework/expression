@@ -61,4 +61,11 @@ public class JunitTest {
         Assert.assertNull(item2);
     }
 
+    @Test
+    public void testMethod() {
+        List<User> users = List.of(new User("a", 20));
+        String say = ExpressionUtils.getValue(Map.of("data", Map.of("users", users)), "data.users[0].say()", String.class);
+        Assert.assertEquals(say, "Hi");
+    }
+
 }

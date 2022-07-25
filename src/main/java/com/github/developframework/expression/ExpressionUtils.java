@@ -14,11 +14,7 @@ import java.util.stream.Stream;
  * @author qiushui
  */
 @SuppressWarnings("unchecked")
-public final class ExpressionUtils {
-
-    private ExpressionUtils() {
-        throw new AssertionError("No " + getClass().getName() + " instances for you!");
-    }
+public abstract class ExpressionUtils {
 
     /**
      * 获取值
